@@ -22,9 +22,9 @@ function [ mae,  mape, mse, rmse] = mean_errors( a, f )
     a = a(nans);
     f = f(nans);
     
-    mae = mean(abs(a(:) - f(:)));
-    mape = mean(abs((a(:)-f(:))./a(:)))*100;
-    mse = mean((a(:) - f(:)).^2);
+    mae = mean(abs(a(:) - f(:)), 1);
+    mape = mean(abs(((a(:)-f(:))./a(:))), 1)*100;
+    mse = mean((a(:) - f(:)).^2, 1);
     rmse = sqrt(mse);
 end
 

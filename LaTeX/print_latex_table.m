@@ -1,9 +1,11 @@
-function [] = print_latex_table( data, colTitles, rowTitles, formatSpec, tblTitle )
+function [] = print_latex_table( data, colTitles, rowTitles, formatSpec, tblTitle, tblNotes )
     %PRINT_LATEX_TABLE Print matrix to LaTeX table
     %
     %   Copyright (c) 2014 by Dmitriy O. Afanasyev
     %   Versions:
     %       1.0 2014.09.15: initial version
+    %       1.1 2016.07.31: support of the unique number format for each columns
+    %       1.2 2016.09.20: no default centering and new font size of notes
     %
     
     if(isempty(data))
@@ -16,11 +18,14 @@ function [] = print_latex_table( data, colTitles, rowTitles, formatSpec, tblTitl
     if(nargin() < 3)
         rowTitles = [];
     end
-    if(nargin() < 4)
-        formatSpec = '%f';
+    if(nargin() < 4 || isempty(formatSpec))
+        formatSpec = '';
     end
     if(nargin() < 5)
         tblTitle = '';
+    end
+    if(nargin() < 6)
+        tblNotes = '';
     end
     
     nRows = size(data, 1);
@@ -35,10 +40,10 @@ function [] = print_latex_table( data, colTitles, rowTitles, formatSpec, tblTitl
         colAlign = [colAlign 'r'];
     end
     
-    fprintf(1, '\\begin{table*}[!h]\n');
+    fprintf(1, '\\begin{table*}[!t]\n');
     fprintf(1, ['\\caption{' tblTitle '}\n']);
     fprintf(1, '\\label{tab:}\n');
-    fprintf(1, '\\centering\n');
+    fprintf(1, '\\footnotesize\n');
     fprintf(1, '\\setlength{\\arrayrulewidth}{1.05 pt}\n');
     fprintf(1, '\\renewcommand{\\arraystretch}{1.1}\n');
     fprintf(1, ['\\begin{tabular*}{1.0\\textwidth}{@{\\extracolsep{\\fill}}' colAlign '}\n']);
@@ -78,7 +83,17 @@ function [] = print_latex_table( data, colTitles, rowTitles, formatSpec, tblTitl
             if(iscell(data))
                 value = data{i,j};
             else
-                value = num2str(data(i,j), formatSpec);
+                if(isempty(formatSpec))
+                    value = num2str(data(i,j));
+                elseif(ischar(formatSpec))
+                    value = num2str(data(i,j), formatSpec);
+                else
+                    if(isempty(formatSpec{j}))
+                        value = num2str(data(i,j));
+                    else
+                        value = num2str(data(i,j), formatSpec{j});
+                    end
+                end
             end
         
             if(j == 1)
@@ -96,7 +111,7 @@ function [] = print_latex_table( data, colTitles, rowTitles, formatSpec, tblTitl
     fprintf(1, '\\hline\n');
     fprintf(1, '\\end{tabular*}\n');
     fprintf(1, '\\begin{spacing}{0.5}\n');
-    fprintf(1, '{\\scriptsize }\n');
+    fprintf(1, ['{\\footnotesize ', tblNotes, '}\n']);
     fprintf(1, '\\end{spacing}\n');
     fprintf(1, '\\end{table*}\n');
 end
