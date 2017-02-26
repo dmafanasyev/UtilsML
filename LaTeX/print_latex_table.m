@@ -111,7 +111,7 @@ function [] = print_latex_table( data, colTitles, rowTitles, formatSpec, tblTitl
     fprintf(1, '\\hline\n');
     fprintf(1, '\\end{tabular*}\n');
     fprintf(1, '\\begin{spacing}{0.5}\n');
-    fprintf(1, ['{\\footnotesize ', tblNotes, '}\n']);
+    fprintf(1, ['{\\footnotesize Notes:', tblNotes, '}\n']);
     fprintf(1, '\\end{spacing}\n');
     fprintf(1, '\\end{table*}\n');
 end
